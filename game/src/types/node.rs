@@ -25,7 +25,7 @@ impl Node {
         Self::Resource(ResourceNode::new(resource, amount))
     }
 
-    pub fn smelter_node(recipe: Arc<Recipe>) -> Self {
+    pub fn smelter_node(recipe: Option<Arc<Recipe>>) -> Self {
         Self::Smelter(SmelterNode::new(recipe))
     }
 }

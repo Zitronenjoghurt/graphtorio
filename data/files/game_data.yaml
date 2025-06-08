@@ -2,18 +2,36 @@ config:
   default_language: en
 
 resources:
-  - identifier: iron-ore
+  - identifier: copper
+    shape: Square
+    color_r: 237
+    color_g: 98
+    color_b: 38
+  - identifier: copper-ore
     shape: Circle
-    color_r: 140
-    color_g: 112
-    color_b: 93
+    color_r: 194
+    color_g: 110
+    color_b: 74
   - identifier: iron
     shape: Square
     color_r: 150
     color_g: 140
     color_b: 132
+  - identifier: iron-ore
+    shape: Circle
+    color_r: 140
+    color_g: 112
+    color_b: 93
 
 recipes:
+  - identifier: copper-smelting
+    kind: Smelting
+    inputs:
+      - resource: copper-ore
+        amount: 32
+    outputs:
+      - resource: copper
+        amount: 32
   - identifier: iron-smelting
     kind: Smelting
     inputs:
@@ -26,13 +44,19 @@ recipes:
 localizations:
   recipe_names:
     en:
+      copper-smelting: Copper Smelting
       iron-smelting: Iron Smelting
     de:
-      iron-smelting: Eisen schmelzen
+      copper-smelting: Kupferschmelze
+      iron-smelting: Eisenschmelze
   resource_names:
     en:
-      iron-ore: Iron Ore
+      copper: Copper
+      copper-ore: Copper Ore
       iron: Iron
+      iron-ore: Iron Ore
     de:
-      iron-ore: Eisenerz
+      copper: Kupfer
+      copper-ore: Kupfererz
       iron: Eisen
+      iron-ore: Eisenerz

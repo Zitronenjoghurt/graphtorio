@@ -1,6 +1,8 @@
 use crate::app::GraphtorioApp;
 use crate::components::node_viewer::NodeViewer;
 use egui::Context;
+use graphtorio_game::data::GameData;
+use std::sync::Arc;
 
 #[derive(Debug)]
 pub struct MainMenuState {
@@ -8,9 +10,9 @@ pub struct MainMenuState {
 }
 
 impl MainMenuState {
-    pub fn new(language: String, fallback_language: String) -> Self {
+    pub fn new(language: String, game_data: Arc<GameData>) -> Self {
         Self {
-            node_viewer: NodeViewer::new(language, fallback_language),
+            node_viewer: NodeViewer::new(language, game_data),
         }
     }
 }

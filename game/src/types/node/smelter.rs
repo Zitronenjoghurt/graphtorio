@@ -4,12 +4,16 @@ use crate::types::resource::ResourceIO;
 use std::sync::Arc;
 
 pub struct SmelterNode {
-    pub recipe: Arc<Recipe>,
+    pub recipe: Option<Arc<Recipe>>,
+    pub selection_filter: String,
 }
 
 impl SmelterNode {
-    pub fn new(recipe: Arc<Recipe>) -> Self {
-        Self { recipe }
+    pub fn new(recipe: Option<Arc<Recipe>>) -> Self {
+        Self {
+            recipe,
+            selection_filter: String::new(),
+        }
     }
 }
 
@@ -19,18 +23,34 @@ impl NodeTrait for SmelterNode {
     }
 
     fn inputs(&self) -> usize {
-        self.recipe.inputs.len()
+        if let Some(recipe) = &self.recipe {
+            recipe.inputs.len()
+        } else {
+            0
+        }
     }
 
     fn outputs(&self) -> usize {
-        self.recipe.outputs.len()
+        if let Some(recipe) = &self.recipe {
+            recipe.outputs.len()
+        } else {
+            0
+        }
     }
 
     fn input_at_index(&self, index: usize) -> Option<&ResourceIO> {
-        self.recipe.inputs.get(index)
+        if let Some(recipe) = &self.recipe {
+            recipe.inputs.get(index)
+        } else {
+            None
+        }
     }
 
     fn output_at_index(&self, index: usize) -> Option<&ResourceIO> {
-        self.recipe.outputs.get(index)
+        if let Some(recipe) = &self.recipe {
+            recipe.outputs.get(index)
+        } else {
+            None
+        }
     }
 }

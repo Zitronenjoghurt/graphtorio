@@ -4,6 +4,7 @@ use crate::data::parsing::recipe::{build_recipes, RawRecipe};
 use crate::data::parsing::resource::{build_resources, RawResource};
 use crate::data::GameData;
 use crate::traits::identifiable::BuildIdentifierDictionary;
+use crate::types::recipe::RecipeKind;
 use bincode::{Decode, Encode};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
@@ -39,12 +40,23 @@ impl RawGameData {
 
         let recipes = build_recipes(self.recipes, &resource_dictionary, &self.localizations)?;
         let recipe_dictionary = recipes.build_identifier_dictionary();
+        let smelting_recipes = recipes
+            .values()
+            .filter_map(|recipe| {
+                if recipe.kind == RecipeKind::Smelting {
+                    Some(recipe.clone())
+                } else {
+                    None
+                }
+            })
+            .collect();
 
         let data = GameData {
             default_language: self.config.default_language,
             languages: self.localizations.get_languages(),
             recipes_by_id: recipes,
             recipes_by_identifier: recipe_dictionary,
+            smelting_recipes,
             resources_by_id: resources,
             resources_by_identifier: resource_dictionary,
         };

@@ -28,13 +28,18 @@ impl GraphtorioApp {
         let iron_ore = game.data.find_resource("iron-ore").unwrap().clone();
         let iron_ore_node = Node::resource_node(iron_ore, 10);
         let iron_recipe = game.data.find_recipe("iron-smelting").unwrap().clone();
-        let iron_smelter = Node::smelter_node(iron_recipe);
-        factory_nodes.insert_node(egui::pos2(100.0, 100.0), iron_ore_node);
-        factory_nodes.insert_node(egui::pos2(300.0, 100.0), iron_smelter);
+        let iron_smelter = Node::smelter_node(Some(iron_recipe));
+        let copper_ore = game.data.find_resource("copper-ore").unwrap().clone();
+        let copper_ore_node = Node::resource_node(copper_ore, 10);
+        let copper_recipe = game.data.find_recipe("copper-smelting").unwrap().clone();
+        let copper_smelter = Node::smelter_node(Some(copper_recipe));
+        factory_nodes.insert_node(egui::pos2(000.0, 100.0), iron_ore_node);
+        factory_nodes.insert_node(egui::pos2(200.0, 100.0), iron_smelter);
+        factory_nodes.insert_node(egui::pos2(400.0, 100.0), copper_ore_node);
+        factory_nodes.insert_node(egui::pos2(600.0, 100.0), copper_smelter);
 
         let selected_language = game.data.default_language.clone();
-        let main_menu_state =
-            MainMenuState::new(selected_language.clone(), selected_language.clone());
+        let main_menu_state = MainMenuState::new(selected_language.clone(), game.data.clone());
 
         let app = Self {
             game,

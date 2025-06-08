@@ -15,6 +15,7 @@ pub struct GameData {
     pub languages: HashSet<String>,
     pub recipes_by_id: HashMap<RecipeId, Arc<Recipe>>,
     pub recipes_by_identifier: HashMap<RecipeIdentifier, Arc<Recipe>>,
+    pub smelting_recipes: Vec<Arc<Recipe>>,
     pub resources_by_id: HashMap<ResourceId, Arc<Resource>>,
     pub resources_by_identifier: HashMap<ResourceIdentifier, Arc<Resource>>,
 }

@@ -8,6 +8,10 @@ impl Localization {
         Self(translations)
     }
 
+    pub fn get_localizations(&self) -> &HashMap<String, String> {
+        &self.0
+    }
+
     pub fn translate(&self, language: &str, fallback: &str) -> String {
         if let Some(translation) = self.0.get(language) {
             translation.to_string()
