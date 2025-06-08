@@ -1,31 +1,19 @@
-use egui::Ui;
+use egui::{Color32, Ui};
 use egui_snarl::ui::{PinInfo, SnarlPin, SnarlViewer};
 use egui_snarl::{InPin, OutPin, Snarl};
-use graphtorio_game::data::GameData;
 use graphtorio_game::types::node::{Node, NodeTrait};
-use std::sync::Arc;
+use graphtorio_game::types::resource::{ResourceIO, ResourceShape};
 
-#[derive(Debug)]
-pub struct NodeViewer {
-    game_data: Arc<GameData>,
-}
-
-impl NodeViewer {
-    pub fn new(game_data: Arc<GameData>) -> Self {
-        Self { game_data }
-    }
-}
+#[derive(Debug, Default)]
+pub struct NodeViewer;
 
 impl SnarlViewer<Node> for NodeViewer {
     fn title(&mut self, node: &Node) -> String {
-        node.title(&self.game_data)
+        node.title()
     }
 
     fn inputs(&mut self, node: &Node) -> usize {
-        match node {
-            Node::Resource(_) => 0,
-            Node::Smelter(_) => 1,
-        }
+        node.inputs()
     }
 
     fn show_input(
@@ -35,14 +23,19 @@ impl SnarlViewer<Node> for NodeViewer {
         scale: f32,
         snarl: &mut Snarl<Node>,
     ) -> impl SnarlPin + 'static {
-        PinInfo::circle().with_fill(egui::Color32::from_rgb(100, 150, 200))
+        let node = &snarl[pin.id.node];
+        let pin_index = pin.id.input;
+
+        let io = node.input_at_index(pin_index);
+        if let Some(io) = io {
+            pin_from_resource_io(ui, io)
+        } else {
+            PinInfo::default()
+        }
     }
 
     fn outputs(&mut self, node: &Node) -> usize {
-        match node {
-            Node::Resource(_) => 1,
-            Node::Smelter(_) => 1,
-        }
+        node.outputs()
     }
 
     fn show_output(
@@ -52,6 +45,31 @@ impl SnarlViewer<Node> for NodeViewer {
         scale: f32,
         snarl: &mut Snarl<Node>,
     ) -> impl SnarlPin + 'static {
-        PinInfo::circle().with_fill(egui::Color32::from_rgb(200, 150, 100))
+        let node = &snarl[pin.id.node];
+        let pin_index = pin.id.output;
+
+        let io = node.output_at_index(pin_index);
+        if let Some(io) = io {
+            pin_from_resource_io(ui, io)
+        } else {
+            PinInfo::default()
+        }
+    }
+}
+
+fn pin_from_resource_io(ui: &mut Ui, io: &ResourceIO) -> PinInfo {
+    ui.label(format!("{} [{}]", io.resource.identifier, io.amount));
+
+    let color = Color32::from_rgb(
+        io.resource.color_r,
+        io.resource.color_g,
+        io.resource.color_b,
+    );
+
+    match io.resource.shape {
+        ResourceShape::Circle => PinInfo::circle().with_fill(color),
+        ResourceShape::Square => PinInfo::square().with_fill(color),
+        ResourceShape::Triangle => PinInfo::triangle().with_fill(color),
+        ResourceShape::Star => PinInfo::star().with_fill(color),
     }
 }

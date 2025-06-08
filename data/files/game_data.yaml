@@ -1,6 +1,14 @@
 resources:
   - identifier: iron-ore
+    shape: Circle
+    color_r: 140
+    color_g: 112
+    color_b: 93
   - identifier: iron
+    shape: Square
+    color_r: 150
+    color_g: 140
+    color_b: 132
 recipes:
   - identifier: iron-smelting
     kind: Smelting

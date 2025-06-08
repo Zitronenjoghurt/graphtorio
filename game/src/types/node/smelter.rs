@@ -1,17 +1,36 @@
-use crate::data::GameData;
 use crate::types::node::NodeTrait;
-use crate::types::recipe::RecipeId;
+use crate::types::recipe::Recipe;
+use crate::types::resource::ResourceIO;
 use std::sync::Arc;
 
 pub struct SmelterNode {
-    pub recipe: RecipeId,
+    pub recipe: Arc<Recipe>,
+}
+
+impl SmelterNode {
+    pub fn new(recipe: Arc<Recipe>) -> Self {
+        Self { recipe }
+    }
 }
 
 impl NodeTrait for SmelterNode {
-    fn title(&self, game_data: &Arc<GameData>) -> String {
-        let Some(recipe) = game_data.get_recipe(self.recipe) else {
-            return "UNDEFINED".to_string();
-        };
-        recipe.identifier.to_string()
+    fn title(&self) -> String {
+        "Smelter".to_string()
+    }
+
+    fn inputs(&self) -> usize {
+        self.recipe.inputs.len()
+    }
+
+    fn outputs(&self) -> usize {
+        self.recipe.outputs.len()
+    }
+
+    fn input_at_index(&self, index: usize) -> Option<&ResourceIO> {
+        self.recipe.inputs.get(index)
+    }
+
+    fn output_at_index(&self, index: usize) -> Option<&ResourceIO> {
+        self.recipe.outputs.get(index)
     }
 }

@@ -5,9 +5,7 @@ use eframe::{App, Frame};
 use egui::Context;
 use egui_snarl::Snarl;
 use graphtorio_game::data::parsing::RawGameData;
-use graphtorio_game::types::node::resource::ResourceNode;
 use graphtorio_game::types::node::Node;
-use graphtorio_game::types::resource::ResourceId;
 use graphtorio_game::Game;
 use std::error::Error;
 
@@ -26,21 +24,18 @@ impl GraphtorioApp {
         let game = Game::new(raw_game_data)?;
 
         let mut factory_nodes = Snarl::new();
-
-        let resource_node = ResourceNode {
-            resource: ResourceId(0),
-            amount: 10,
-        };
-
-        let node = Node::Resource(resource_node);
-
-        factory_nodes.insert_node(egui::pos2(100.0, 100.0), node);
+        let iron_ore = game.data.find_resource("iron-ore").unwrap().clone();
+        let iron_ore_node = Node::resource_node(iron_ore, 10);
+        let iron_recipe = game.data.find_recipe("iron-smelting").unwrap().clone();
+        let iron_smelter = Node::smelter_node(iron_recipe);
+        factory_nodes.insert_node(egui::pos2(100.0, 100.0), iron_ore_node);
+        factory_nodes.insert_node(egui::pos2(300.0, 100.0), iron_smelter);
 
         let app = Self {
-            main_menu_state: MainMenuState::new(&game),
             game,
             factory_nodes,
             current_view: UIView::MainMenu,
+            main_menu_state: MainMenuState::default(),
         };
 
         Ok(app)

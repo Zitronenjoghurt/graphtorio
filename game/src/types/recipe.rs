@@ -1,5 +1,5 @@
 use crate::traits::identifiable::Identifiable;
-use crate::types::resource::ResourceId;
+use crate::types::resource::ResourceIO;
 use bincode::{Decode, Encode};
 use serde::{Deserialize, Serialize};
 
@@ -14,19 +14,13 @@ pub enum RecipeKind {
     Smelting,
 }
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-pub struct RecipeIO {
-    pub resource: ResourceId,
-    pub amount: u64,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct Recipe {
     pub id: RecipeId,
     pub identifier: String,
     pub kind: RecipeKind,
-    pub inputs: Vec<RecipeIO>,
-    pub outputs: Vec<RecipeIO>,
+    pub inputs: Vec<ResourceIO>,
+    pub outputs: Vec<ResourceIO>,
 }
 
 impl Identifiable<String> for Recipe {

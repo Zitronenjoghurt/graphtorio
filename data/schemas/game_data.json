@@ -92,10 +92,42 @@
         "identifier": {
           "type": "string",
           "description": "Unique identifier for the resource"
+        },
+        "shape": {
+          "type": "string",
+          "description": "The shape this resource will have when displayed on graph nodes",
+          "enum": [
+            "Circle",
+            "Triangle",
+            "Square",
+            "Star"
+          ]
+        },
+        "color_r": {
+          "type": "number",
+          "description": "The red part of the color this resources shape will have",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "color_g": {
+          "type": "number",
+          "description": "The green part of the color this resources shape will have",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "color_b": {
+          "type": "number",
+          "description": "The blue part of the color this resources shape will have",
+          "minimum": 0,
+          "maximum": 255
         }
       },
       "required": [
-        "identifier"
+        "identifier",
+        "shape",
+        "color_r",
+        "color_g",
+        "color_b"
       ],
       "additionalProperties": false
     }

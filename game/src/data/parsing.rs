@@ -7,8 +7,8 @@ use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::path::Path;
 
-mod recipe;
-mod resource;
+pub mod recipe;
+pub mod resource;
 
 #[derive(Encode, Decode, Serialize, Deserialize)]
 pub struct RawGameData {
@@ -31,8 +31,14 @@ impl RawGameData {
         let resource_dictionary = resources.build_identifier_dictionary();
 
         let recipes = build_recipes(self.recipes, &resource_dictionary)?;
+        let recipe_dictionary = recipes.build_identifier_dictionary();
 
-        let data = GameData { recipes, resources };
+        let data = GameData {
+            recipes_by_id: recipes,
+            recipes_by_identifier: recipe_dictionary,
+            resources_by_id: resources,
+            resources_by_identifier: resource_dictionary,
+        };
 
         Ok(data)
     }

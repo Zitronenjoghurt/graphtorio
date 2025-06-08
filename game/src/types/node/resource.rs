@@ -1,18 +1,37 @@
-use crate::data::GameData;
 use crate::types::node::NodeTrait;
-use crate::types::resource::ResourceId;
+use crate::types::resource::{Resource, ResourceIO};
 use std::sync::Arc;
 
 pub struct ResourceNode {
-    pub resource: ResourceId,
-    pub amount: u64,
+    pub output: ResourceIO,
+}
+
+impl ResourceNode {
+    pub fn new(resource: Arc<Resource>, amount: u64) -> Self {
+        Self {
+            output: ResourceIO { resource, amount },
+        }
+    }
 }
 
 impl NodeTrait for ResourceNode {
-    fn title(&self, game_data: &Arc<GameData>) -> String {
-        let Some(resource) = game_data.get_resource(self.resource) else {
-            return "UNDEFINED".to_string();
-        };
-        resource.identifier.to_string()
+    fn title(&self) -> String {
+        "Raw Resource".to_string()
+    }
+
+    fn inputs(&self) -> usize {
+        0
+    }
+
+    fn outputs(&self) -> usize {
+        1
+    }
+
+    fn input_at_index(&self, _index: usize) -> Option<&ResourceIO> {
+        None
+    }
+
+    fn output_at_index(&self, index: usize) -> Option<&ResourceIO> {
+        if index == 0 { Some(&self.output) } else { None }
     }
 }

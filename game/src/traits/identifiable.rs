@@ -1,23 +1,22 @@
 use std::collections::HashMap;
 use std::hash::Hash;
+use std::sync::Arc;
 
 pub trait Identifiable<Id> {
     fn identifier(&self) -> Id;
 }
 
-pub trait BuildIdentifierDictionary<Id, K> {
-    fn build_identifier_dictionary(&self) -> HashMap<Id, K>;
+pub trait BuildIdentifierDictionary<Id, E> {
+    fn build_identifier_dictionary(&self) -> HashMap<Id, Arc<E>>;
 }
 
-impl<Id, K, T> BuildIdentifierDictionary<Id, K> for HashMap<K, T>
+impl<Id, K, E> BuildIdentifierDictionary<Id, E> for HashMap<K, Arc<E>>
 where
     Id: Eq + Hash,
     K: Clone,
-    T: Identifiable<Id>,
+    E: Identifiable<Id>,
 {
-    fn build_identifier_dictionary(&self) -> HashMap<Id, K> {
-        self.iter()
-            .map(|(key, entry)| (entry.identifier(), key.clone()))
-            .collect()
+    fn build_identifier_dictionary(&self) -> HashMap<Id, Arc<E>> {
+        self.values().map(|e| (e.identifier(), e.clone())).collect()
     }
 }
