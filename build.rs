@@ -12,8 +12,12 @@ fn main() {
     let game_data_path = data_path.join("game_data.yaml");
 
     let raw_game_data = RawGameData::load_yaml(&game_data_path).unwrap();
+
     let serialized = bincode::encode_to_vec(&raw_game_data, bincode::config::standard()).unwrap();
     let compressed = zstd::encode_all(&serialized[..], 22).unwrap();
+
+    // Validate game data
+    raw_game_data.build().unwrap();
 
     let mut file = File::create(dest_path).unwrap();
     file.write_all(&compressed).unwrap();

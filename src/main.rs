@@ -10,7 +10,7 @@ pub const GAME_DATA_BYTES: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/dat
 fn main() {
     let native_options = eframe::NativeOptions::default();
     eframe::run_native(
-        "World Study",
+        "Graphtorio",
         native_options,
         Box::new(|cc| Ok(Box::new(GraphtorioApp::new(cc).unwrap()))),
     )

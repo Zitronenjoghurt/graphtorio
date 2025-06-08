@@ -1,5 +1,5 @@
 use crate::data::parsing::resource::ResourceIdentifier;
-use crate::types::recipe::{Recipe, RecipeIO, RecipeIOSize, RecipeId, RecipeIdSize};
+use crate::types::recipe::{Recipe, RecipeIO, RecipeId, RecipeIdSize, RecipeKind};
 use crate::types::resource::ResourceId;
 use bincode::{Decode, Encode};
 use serde::{Deserialize, Serialize};
@@ -11,7 +11,7 @@ pub type RecipeIdentifier = String;
 #[derive(Clone, Encode, Decode, Serialize, Deserialize)]
 pub struct RawRecipeIO {
     pub resource: ResourceIdentifier,
-    pub amount: RecipeIOSize,
+    pub amount: u64,
 }
 
 impl RawRecipeIO {
@@ -34,6 +34,7 @@ impl RawRecipeIO {
 #[derive(Encode, Decode, Serialize, Deserialize)]
 pub struct RawRecipe {
     pub identifier: RecipeIdentifier,
+    pub kind: RecipeKind,
     pub inputs: Vec<RawRecipeIO>,
     pub outputs: Vec<RawRecipeIO>,
 }
@@ -59,6 +60,7 @@ impl RawRecipe {
         let recipe = Recipe {
             id,
             identifier: self.identifier,
+            kind: self.kind,
             inputs,
             outputs,
         };

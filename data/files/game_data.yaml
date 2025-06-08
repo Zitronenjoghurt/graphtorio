@@ -3,9 +3,10 @@ resources:
   - identifier: iron
 recipes:
   - identifier: iron-smelting
+    kind: Smelting
     inputs:
       - resource: iron-ore
-        amount: 1
+        amount: 32
     outputs:
       - resource: iron
-        amount: 1
+        amount: 32
