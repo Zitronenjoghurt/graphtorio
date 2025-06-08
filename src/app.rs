@@ -1,21 +1,33 @@
-use crate::app::views::main_menu::MainMenuState;
-use crate::app::views::*;
+use crate::views::main_menu::MainMenuState;
+use crate::views::*;
+use crate::GAME_DATA_BYTES;
 use eframe::{App, Frame};
 use egui::Context;
+use graphtorio_game::data::parsing::RawGameData;
+use graphtorio_game::Game;
+use std::error::Error;
 
-mod components;
-mod views;
-
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct GraphtorioApp {
+    game: Game,
     current_view: UIView,
 
     main_menu_state: MainMenuState,
 }
 
 impl GraphtorioApp {
-    pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
-        Self::default()
+    pub fn new(_cc: &eframe::CreationContext<'_>) -> Result<Self, Box<dyn Error>> {
+        let decompressed_game_data = zstd::decode_all(GAME_DATA_BYTES)?;
+        let raw_game_data = RawGameData::decode(&decompressed_game_data)?;
+        let game = Game::new(raw_game_data)?;
+
+        let app = Self {
+            game,
+            current_view: UIView::MainMenu,
+            main_menu_state: MainMenuState::default(),
+        };
+
+        Ok(app)
     }
 }
 

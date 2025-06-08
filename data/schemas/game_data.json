@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/-game-data.schema.json",
+  "title": "Game Data",
+  "description": "Schema for data containing recipes and resources",
+  "type": "object",
+  "properties": {
+    "recipes": {
+      "type": "array",
+      "description": "List of recipes",
+      "items": {
+        "$ref": "#/$defs/Recipe"
+      }
+    },
+    "resources": {
+      "type": "array",
+      "description": "List of resources",
+      "items": {
+        "$ref": "#/$defs/Resource"
+      }
+    }
+  },
+  "required": [
+    "recipes",
+    "resources"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Recipe": {
+      "type": "object",
+      "description": "A recipe with inputs and outputs",
+      "properties": {
+        "identifier": {
+          "type": "string",
+          "description": "Unique identifier for the recipe"
+        },
+        "inputs": {
+          "type": "array",
+          "description": "List of input resources and their quantities",
+          "items": {
+            "$ref": "#/$defs/RecipeIO"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "description": "List of output resources and their quantities",
+          "items": {
+            "$ref": "#/$defs/RecipeIO"
+          }
+        }
+      },
+      "required": [
+        "identifier",
+        "inputs",
+        "outputs"
+      ],
+      "additionalProperties": false
+    },
+    "RecipeIO": {
+      "type": "object",
+      "description": "A recipe input or output with resource and amount",
+      "properties": {
+        "resource": {
+          "type": "string",
+          "description": "Resource identifier"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Amount of the resource",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "resource",
+        "amount"
+      ],
+      "additionalProperties": false
+    },
+    "Resource": {
+      "type": "object",
+      "description": "A game resource",
+      "properties": {
+        "identifier": {
+          "type": "string",
+          "description": "Unique identifier for the resource"
+        }
+      },
+      "required": [
+        "identifier"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

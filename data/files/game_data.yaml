@@ -1,0 +1,11 @@
+resources:
+  - identifier: iron-ore
+  - identifier: iron
+recipes:
+  - identifier: iron-smelting
+    inputs:
+      - resource: iron-ore
+        amount: 1
+    outputs:
+      - resource: iron
+        amount: 1
