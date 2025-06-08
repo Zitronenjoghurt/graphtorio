@@ -1,3 +1,4 @@
+use crate::data::parsing::localizations::RawLocalizations;
 use crate::types::resource::{Resource, ResourceIO, ResourceId, ResourceIdSize, ResourceShape};
 use bincode::{Decode, Encode};
 use serde::{Deserialize, Serialize};
@@ -40,10 +41,15 @@ pub struct RawResource {
 }
 
 impl RawResource {
-    pub fn build(self, id: ResourceId) -> Resource {
+    pub fn build(self, id: ResourceId, localizations: &RawLocalizations) -> Resource {
+        let name = localizations
+            .resource_names
+            .get_localization(&self.identifier);
+
         Resource {
             id,
             identifier: self.identifier,
+            name,
             shape: self.shape,
             color_r: self.color_r,
             color_g: self.color_g,
@@ -52,14 +58,17 @@ impl RawResource {
     }
 }
 
-pub fn build_resources(raw_resources: Vec<RawResource>) -> HashMap<ResourceId, Arc<Resource>> {
+pub fn build_resources(
+    raw_resources: Vec<RawResource>,
+    localizations: &RawLocalizations,
+) -> HashMap<ResourceId, Arc<Resource>> {
     let mut id_counter: ResourceIdSize = 0;
     raw_resources
         .into_iter()
         .map(|raw_resource| {
             let id = ResourceId(id_counter);
             id_counter += 1;
-            (id, Arc::new(raw_resource.build(id)))
+            (id, Arc::new(raw_resource.build(id, localizations)))
         })
         .collect()
 }

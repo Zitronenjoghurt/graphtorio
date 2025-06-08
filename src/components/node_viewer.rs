@@ -5,7 +5,19 @@ use graphtorio_game::types::node::{Node, NodeTrait};
 use graphtorio_game::types::resource::{ResourceIO, ResourceShape};
 
 #[derive(Debug, Default)]
-pub struct NodeViewer;
+pub struct NodeViewer {
+    pub current_language: String,
+    pub fallback_language: String,
+}
+
+impl NodeViewer {
+    pub fn new(current_language: String, fallback_language: String) -> Self {
+        Self {
+            current_language,
+            fallback_language,
+        }
+    }
+}
 
 impl SnarlViewer<Node> for NodeViewer {
     fn title(&mut self, node: &Node) -> String {
@@ -28,7 +40,7 @@ impl SnarlViewer<Node> for NodeViewer {
 
         let io = node.input_at_index(pin_index);
         if let Some(io) = io {
-            pin_from_resource_io(ui, io)
+            pin_from_resource_io(ui, io, &self.current_language, &self.fallback_language)
         } else {
             PinInfo::default()
         }
@@ -50,15 +62,24 @@ impl SnarlViewer<Node> for NodeViewer {
 
         let io = node.output_at_index(pin_index);
         if let Some(io) = io {
-            pin_from_resource_io(ui, io)
+            pin_from_resource_io(ui, io, &self.current_language, &self.fallback_language)
         } else {
             PinInfo::default()
         }
     }
 }
 
-fn pin_from_resource_io(ui: &mut Ui, io: &ResourceIO) -> PinInfo {
-    ui.label(format!("{} [{}]", io.resource.identifier, io.amount));
+fn pin_from_resource_io(
+    ui: &mut Ui,
+    io: &ResourceIO,
+    language: &str,
+    fallback_language: &str,
+) -> PinInfo {
+    ui.label(format!(
+        "{} [{}]",
+        io.resource.name.translate(language, fallback_language),
+        io.amount
+    ));
 
     let color = Color32::from_rgb(
         io.resource.color_r,

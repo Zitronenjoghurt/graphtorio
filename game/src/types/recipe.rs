@@ -1,4 +1,5 @@
 use crate::traits::identifiable::Identifiable;
+use crate::types::localization::Localization;
 use crate::types::resource::ResourceIO;
 use bincode::{Decode, Encode};
 use serde::{Deserialize, Serialize};
@@ -18,6 +19,7 @@ pub enum RecipeKind {
 pub struct Recipe {
     pub id: RecipeId,
     pub identifier: String,
+    pub name: Localization,
     pub kind: RecipeKind,
     pub inputs: Vec<ResourceIO>,
     pub outputs: Vec<ResourceIO>,

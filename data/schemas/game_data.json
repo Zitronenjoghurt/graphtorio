@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/-game-data.schema.json",
+  "$id": "https://example.com/game-data.schema.json",
   "title": "Game Data",
-  "description": "Schema for data containing recipes and resources",
+  "description": "Schema for data containing recipes, resources, and localizations",
   "type": "object",
   "properties": {
     "recipes": {
@@ -18,11 +18,36 @@
       "items": {
         "$ref": "#/$defs/Resource"
       }
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "default_language": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "default_language"
+      ]
+    },
+    "localizations": {
+      "type": "object",
+      "description": "Translations for all visible text",
+      "properties": {
+        "recipe_names": {
+          "$ref": "#/$defs/Localization"
+        },
+        "resource_names": {
+          "$ref": "#/$defs/Localization"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "required": [
     "recipes",
-    "resources"
+    "resources",
+    "config"
   ],
   "additionalProperties": false,
   "$defs": {
@@ -129,6 +154,24 @@
         "color_g",
         "color_b"
       ],
+      "additionalProperties": false
+    },
+    "Localization": {
+      "type": "object",
+      "description": "Mapping of language codes to identifier-translation mappings",
+      "patternProperties": {
+        "^.+$": {
+          "type": "object",
+          "description": "Mapping of identifiers to their translations in this language",
+          "patternProperties": {
+            "^.+$": {
+              "type": "string",
+              "description": "The translated text"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
       "additionalProperties": false
     }
   }

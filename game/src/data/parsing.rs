@@ -1,3 +1,5 @@
+use crate::data::parsing::config::RawConfig;
+use crate::data::parsing::localizations::RawLocalizations;
 use crate::data::parsing::recipe::{build_recipes, RawRecipe};
 use crate::data::parsing::resource::{build_resources, RawResource};
 use crate::data::GameData;
@@ -7,13 +9,18 @@ use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::path::Path;
 
+mod config;
+mod localizations;
 pub mod recipe;
 pub mod resource;
 
-#[derive(Encode, Decode, Serialize, Deserialize)]
+#[derive(Default, Encode, Decode, Serialize, Deserialize)]
 pub struct RawGameData {
     recipes: Vec<RawRecipe>,
     resources: Vec<RawResource>,
+    config: RawConfig,
+    #[serde(default)]
+    localizations: RawLocalizations,
 }
 
 impl RawGameData {
@@ -27,13 +34,15 @@ impl RawGameData {
     }
 
     pub fn build(self) -> Result<GameData, Box<dyn Error>> {
-        let resources = build_resources(self.resources);
+        let resources = build_resources(self.resources, &self.localizations);
         let resource_dictionary = resources.build_identifier_dictionary();
 
-        let recipes = build_recipes(self.recipes, &resource_dictionary)?;
+        let recipes = build_recipes(self.recipes, &resource_dictionary, &self.localizations)?;
         let recipe_dictionary = recipes.build_identifier_dictionary();
 
         let data = GameData {
+            default_language: self.config.default_language,
+            languages: self.localizations.get_languages(),
             recipes_by_id: recipes,
             recipes_by_identifier: recipe_dictionary,
             resources_by_id: resources,

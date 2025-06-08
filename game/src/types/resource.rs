@@ -1,4 +1,5 @@
 use crate::traits::identifiable::Identifiable;
+use crate::types::localization::Localization;
 use bincode::{Decode, Encode};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -29,6 +30,7 @@ pub struct ResourceIO {
 pub struct Resource {
     pub id: ResourceId,
     pub identifier: String,
+    pub name: Localization,
     pub shape: ResourceShape,
     pub color_r: u8,
     pub color_g: u8,

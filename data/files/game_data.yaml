@@ -1,3 +1,6 @@
+config:
+  default_language: en
+
 resources:
   - identifier: iron-ore
     shape: Circle
@@ -9,6 +12,7 @@ resources:
     color_r: 150
     color_g: 140
     color_b: 132
+
 recipes:
   - identifier: iron-smelting
     kind: Smelting
@@ -18,3 +22,17 @@ recipes:
     outputs:
       - resource: iron
         amount: 32
+
+localizations:
+  recipe_names:
+    en:
+      iron-smelting: Iron Smelting
+    de:
+      iron-smelting: Eisen schmelzen
+  resource_names:
+    en:
+      iron-ore: Iron Ore
+      iron: Iron
+    de:
+      iron-ore: Eisenerz
+      iron: Eisen

@@ -13,6 +13,7 @@ pub struct GraphtorioApp {
     pub game: Game,
     pub factory_nodes: Snarl<Node>,
 
+    pub selected_language: String,
     pub current_view: UIView,
     pub main_menu_state: MainMenuState,
 }
@@ -31,11 +32,16 @@ impl GraphtorioApp {
         factory_nodes.insert_node(egui::pos2(100.0, 100.0), iron_ore_node);
         factory_nodes.insert_node(egui::pos2(300.0, 100.0), iron_smelter);
 
+        let selected_language = game.data.default_language.clone();
+        let main_menu_state =
+            MainMenuState::new(selected_language.clone(), selected_language.clone());
+
         let app = Self {
             game,
             factory_nodes,
+            selected_language,
             current_view: UIView::MainMenu,
-            main_menu_state: MainMenuState::default(),
+            main_menu_state,
         };
 
         Ok(app)

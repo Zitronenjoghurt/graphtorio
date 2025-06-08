@@ -3,7 +3,7 @@ use crate::data::parsing::resource::ResourceIdentifier;
 use crate::types::recipe::{Recipe, RecipeId};
 use crate::types::resource::{Resource, ResourceId};
 use std::borrow::Borrow;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 use std::sync::Arc;
 
@@ -11,6 +11,8 @@ pub mod parsing;
 
 #[derive(Debug)]
 pub struct GameData {
+    pub default_language: String,
+    pub languages: HashSet<String>,
     pub recipes_by_id: HashMap<RecipeId, Arc<Recipe>>,
     pub recipes_by_identifier: HashMap<RecipeIdentifier, Arc<Recipe>>,
     pub resources_by_id: HashMap<ResourceId, Arc<Resource>>,
