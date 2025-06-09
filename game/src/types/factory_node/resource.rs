@@ -19,11 +19,11 @@ impl FactoryNodeTrait for ResourceNode {
         "Raw Resource".to_string()
     }
 
-    fn inputs(&self) -> usize {
+    fn input_count(&self) -> usize {
         0
     }
 
-    fn outputs(&self) -> usize {
+    fn output_count(&self) -> usize {
         1
     }
 

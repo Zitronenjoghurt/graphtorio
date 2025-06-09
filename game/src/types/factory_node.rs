@@ -9,8 +9,8 @@ pub mod smelter;
 
 pub trait FactoryNodeTrait {
     fn title(&self) -> String;
-    fn inputs(&self) -> usize;
-    fn outputs(&self) -> usize;
+    fn input_count(&self) -> usize;
+    fn output_count(&self) -> usize;
     fn input_at_index(&self, index: usize) -> Option<&ResourceIO>;
     fn output_at_index(&self, index: usize) -> Option<&ResourceIO>;
 }
@@ -38,17 +38,17 @@ impl FactoryNodeTrait for FactoryNode {
         }
     }
 
-    fn inputs(&self) -> usize {
+    fn input_count(&self) -> usize {
         match self {
-            Self::Resource(resource) => resource.inputs(),
-            Self::Smelter(smelter) => smelter.inputs(),
+            Self::Resource(resource) => resource.input_count(),
+            Self::Smelter(smelter) => smelter.input_count(),
         }
     }
 
-    fn outputs(&self) -> usize {
+    fn output_count(&self) -> usize {
         match self {
-            Self::Resource(resource) => resource.outputs(),
-            Self::Smelter(smelter) => smelter.outputs(),
+            Self::Resource(resource) => resource.output_count(),
+            Self::Smelter(smelter) => smelter.output_count(),
         }
     }
 

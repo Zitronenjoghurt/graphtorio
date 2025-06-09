@@ -22,7 +22,7 @@ impl FactoryNodeTrait for SmelterNode {
         "Smelter".to_string()
     }
 
-    fn inputs(&self) -> usize {
+    fn input_count(&self) -> usize {
         if let Some(recipe) = &self.recipe {
             recipe.inputs.len()
         } else {
@@ -30,7 +30,7 @@ impl FactoryNodeTrait for SmelterNode {
         }
     }
 
-    fn outputs(&self) -> usize {
+    fn output_count(&self) -> usize {
         if let Some(recipe) = &self.recipe {
             recipe.outputs.len()
         } else {

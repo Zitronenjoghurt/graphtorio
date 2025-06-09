@@ -17,7 +17,7 @@ impl View for MainMenuView {
 
     fn render(&mut self, ctx: &Context, state: &mut AppState) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            self.node_viewer.update_context(&state.selected_language);
+            self.node_viewer.update(&state);
             state
                 .factory_nodes
                 .show(&mut self.node_viewer, &Default::default(), 1, ui);
