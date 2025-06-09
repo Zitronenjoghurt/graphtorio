@@ -1,4 +1,4 @@
-use crate::types::node::NodeTrait;
+use crate::types::factory_node::FactoryNodeTrait;
 use crate::types::recipe::Recipe;
 use crate::types::resource::ResourceIO;
 use std::sync::Arc;
@@ -17,7 +17,7 @@ impl SmelterNode {
     }
 }
 
-impl NodeTrait for SmelterNode {
+impl FactoryNodeTrait for SmelterNode {
     fn title(&self) -> String {
         "Smelter".to_string()
     }

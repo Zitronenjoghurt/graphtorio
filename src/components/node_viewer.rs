@@ -1,9 +1,10 @@
+use crate::app::state::AppState;
 use egui::{Color32, PopupCloseBehavior, Ui};
 use egui_snarl::ui::{PinInfo, SnarlPin, SnarlViewer};
 use egui_snarl::{InPin, NodeId, OutPin, Snarl};
 use graphtorio_game::data::GameData;
-use graphtorio_game::types::node::smelter::SmelterNode;
-use graphtorio_game::types::node::{Node, NodeTrait};
+use graphtorio_game::types::factory_node::smelter::SmelterNode;
+use graphtorio_game::types::factory_node::{FactoryNode, FactoryNodeTrait};
 use graphtorio_game::types::recipe::Recipe;
 use graphtorio_game::types::resource::{ResourceIO, ResourceShape};
 use std::collections::HashMap;
@@ -11,42 +12,53 @@ use std::sync::Arc;
 
 #[derive(Debug)]
 pub struct NodeViewer {
-    pub current_language: String,
-    pub fallback_language: String,
-    pub game_data: Arc<GameData>,
-    smelter_options_by_language: HashMap<String, HashMap<String, Arc<Recipe>>>,
+    current_language: String,
+    fallback_language: String,
+    game_data: Arc<GameData>,
+    smelter_options: HashMap<String, Arc<Recipe>>,
 }
 
 impl NodeViewer {
-    pub fn new(current_language: String, game_data: Arc<GameData>) -> Self {
-        let smelter_options_by_language =
-            game_data
-                .smelting_recipes
-                .iter()
-                .fold(HashMap::new(), |mut acc, recipe| {
-                    for (language, translated_name) in recipe.name.get_localizations() {
-                        acc.entry(language.clone())
-                            .or_insert_with(HashMap::new)
-                            .insert(translated_name.clone(), recipe.clone());
-                    }
-                    acc
-                });
-
+    pub fn new(state: &AppState) -> Self {
+        let game_data = state.game.data.clone();
         Self {
-            current_language,
+            current_language: state.selected_language.clone(),
             fallback_language: game_data.default_language.clone(),
             game_data,
-            smelter_options_by_language,
+            smelter_options: HashMap::new(),
         }
+    }
+
+    pub fn update_context(&mut self, language: &str) {
+        if language != self.current_language {
+            self.current_language = language.to_string();
+            self.process_smelter_options();
+        }
+    }
+
+    fn process_smelter_options(&mut self) {
+        self.smelter_options = self
+            .game_data
+            .smelting_recipes
+            .iter()
+            .map(|recipe| {
+                (
+                    recipe
+                        .name
+                        .translate(&self.current_language, &self.fallback_language),
+                    Arc::clone(recipe),
+                )
+            })
+            .collect();
     }
 }
 
-impl SnarlViewer<Node> for NodeViewer {
-    fn title(&mut self, node: &Node) -> String {
+impl SnarlViewer<FactoryNode> for NodeViewer {
+    fn title(&mut self, node: &FactoryNode) -> String {
         node.title()
     }
 
-    fn inputs(&mut self, node: &Node) -> usize {
+    fn inputs(&mut self, node: &FactoryNode) -> usize {
         node.inputs()
     }
 
@@ -55,7 +67,7 @@ impl SnarlViewer<Node> for NodeViewer {
         pin: &InPin,
         ui: &mut Ui,
         scale: f32,
-        snarl: &mut Snarl<Node>,
+        snarl: &mut Snarl<FactoryNode>,
     ) -> impl SnarlPin + 'static {
         let node = &snarl[pin.id.node];
         let pin_index = pin.id.input;
@@ -68,7 +80,7 @@ impl SnarlViewer<Node> for NodeViewer {
         }
     }
 
-    fn outputs(&mut self, node: &Node) -> usize {
+    fn outputs(&mut self, node: &FactoryNode) -> usize {
         node.outputs()
     }
 
@@ -77,7 +89,7 @@ impl SnarlViewer<Node> for NodeViewer {
         pin: &OutPin,
         ui: &mut Ui,
         scale: f32,
-        snarl: &mut Snarl<Node>,
+        snarl: &mut Snarl<FactoryNode>,
     ) -> impl SnarlPin + 'static {
         let node = &snarl[pin.id.node];
         let pin_index = pin.id.output;
@@ -90,9 +102,9 @@ impl SnarlViewer<Node> for NodeViewer {
         }
     }
 
-    fn has_body(&mut self, node: &Node) -> bool {
+    fn has_body(&mut self, node: &FactoryNode) -> bool {
         match node {
-            Node::Smelter(_) => true,
+            FactoryNode::Smelter(_) => true,
             _ => false,
         }
     }
@@ -104,17 +116,17 @@ impl SnarlViewer<Node> for NodeViewer {
         outputs: &[OutPin],
         ui: &mut Ui,
         scale: f32,
-        snarl: &mut Snarl<Node>,
+        snarl: &mut Snarl<FactoryNode>,
     ) {
         let node = &mut snarl[node_id];
 
         match node {
-            Node::Smelter(smelter) => self.show_smelter_node(smelter, ui),
+            FactoryNode::Smelter(smelter) => self.show_smelter_node(smelter, ui),
             _ => {}
         }
     }
 
-    fn connect(&mut self, from: &OutPin, to: &InPin, snarl: &mut Snarl<Node>) {
+    fn connect(&mut self, from: &OutPin, to: &InPin, snarl: &mut Snarl<FactoryNode>) {
         let out_node = &snarl[from.id.node];
         let out_index = from.id.output;
         let in_node = &snarl[to.id.node];
@@ -172,11 +184,6 @@ impl NodeViewer {
                     }
                 });
             } else {
-                let Some(options) = self.smelter_options_by_language.get(&self.current_language)
-                else {
-                    return;
-                };
-
                 let popup_id = ui.make_persistent_id("recipe_selector_popup");
                 let button_response = ui.button("Select Recipe");
 
@@ -194,7 +201,8 @@ impl NodeViewer {
                         ui.text_edit_singleline(&mut node.selection_filter);
                         ui.separator();
 
-                        let filtered_options: Vec<_> = options
+                        let filtered_options: Vec<_> = self
+                            .smelter_options
                             .keys()
                             .filter(|name| {
                                 name.to_lowercase()
@@ -207,7 +215,7 @@ impl NodeViewer {
                             .show(ui, |ui| {
                                 for option in filtered_options {
                                     if ui.selectable_label(false, option).clicked() {
-                                        node.recipe = Some(options[option].clone());
+                                        node.recipe = Some(self.smelter_options[option].clone());
                                         ui.memory_mut(|mem| mem.close_popup());
                                     }
                                 }

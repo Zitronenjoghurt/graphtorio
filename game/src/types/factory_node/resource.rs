@@ -1,4 +1,4 @@
-use crate::types::node::NodeTrait;
+use crate::types::factory_node::FactoryNodeTrait;
 use crate::types::resource::{Resource, ResourceIO};
 use std::sync::Arc;
 
@@ -14,7 +14,7 @@ impl ResourceNode {
     }
 }
 
-impl NodeTrait for ResourceNode {
+impl FactoryNodeTrait for ResourceNode {
     fn title(&self) -> String {
         "Raw Resource".to_string()
     }

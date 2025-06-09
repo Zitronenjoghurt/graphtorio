@@ -1,29 +1,26 @@
-use crate::app::GraphtorioApp;
+use crate::app::state::AppState;
 use crate::components::node_viewer::NodeViewer;
+use crate::views::View;
 use egui::Context;
-use graphtorio_game::data::GameData;
-use std::sync::Arc;
 
 #[derive(Debug)]
-pub struct MainMenuState {
+pub struct MainMenuView {
     node_viewer: NodeViewer,
 }
 
-impl MainMenuState {
-    pub fn new(language: String, game_data: Arc<GameData>) -> Self {
+impl View for MainMenuView {
+    fn new(state: &AppState) -> Self {
         Self {
-            node_viewer: NodeViewer::new(language, game_data),
+            node_viewer: NodeViewer::new(state),
         }
     }
-}
 
-pub fn render(ctx: &Context, app: &mut GraphtorioApp) {
-    egui::CentralPanel::default().show(ctx, |ui| {
-        app.factory_nodes.show(
-            &mut app.main_menu_state.node_viewer,
-            &Default::default(),
-            1,
-            ui,
-        );
-    });
+    fn render(&mut self, ctx: &Context, state: &mut AppState) {
+        egui::CentralPanel::default().show(ctx, |ui| {
+            self.node_viewer.update_context(&state.selected_language);
+            state
+                .factory_nodes
+                .show(&mut self.node_viewer, &Default::default(), 1, ui);
+        });
+    }
 }

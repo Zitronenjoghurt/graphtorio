@@ -1,5 +1,5 @@
-use crate::types::node::resource::ResourceNode;
-use crate::types::node::smelter::SmelterNode;
+use crate::types::factory_node::resource::ResourceNode;
+use crate::types::factory_node::smelter::SmelterNode;
 use crate::types::recipe::Recipe;
 use crate::types::resource::{Resource, ResourceIO};
 use std::sync::Arc;
@@ -7,7 +7,7 @@ use std::sync::Arc;
 pub mod resource;
 pub mod smelter;
 
-pub trait NodeTrait {
+pub trait FactoryNodeTrait {
     fn title(&self) -> String;
     fn inputs(&self) -> usize;
     fn outputs(&self) -> usize;
@@ -15,22 +15,22 @@ pub trait NodeTrait {
     fn output_at_index(&self, index: usize) -> Option<&ResourceIO>;
 }
 
-pub enum Node {
+pub enum FactoryNode {
     Resource(ResourceNode),
     Smelter(SmelterNode),
 }
 
-impl Node {
-    pub fn resource_node(resource: Arc<Resource>, amount: u64) -> Self {
+impl FactoryNode {
+    pub fn resource(resource: Arc<Resource>, amount: u64) -> Self {
         Self::Resource(ResourceNode::new(resource, amount))
     }
 
-    pub fn smelter_node(recipe: Option<Arc<Recipe>>) -> Self {
+    pub fn smelter(recipe: Option<Arc<Recipe>>) -> Self {
         Self::Smelter(SmelterNode::new(recipe))
     }
 }
 
-impl NodeTrait for Node {
+impl FactoryNodeTrait for FactoryNode {
     fn title(&self) -> String {
         match self {
             Self::Resource(resource) => resource.title(),
