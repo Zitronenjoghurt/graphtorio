@@ -1,5 +1,5 @@
-use crate::types::factory_node::resource::ResourceNode;
-use crate::types::factory_node::smelter::SmelterNode;
+use crate::types::factory::node::resource::ResourceNode;
+use crate::types::factory::node::smelter::SmelterNode;
 use crate::types::recipe::Recipe;
 use crate::types::resource::{Resource, ResourceIO};
 use std::sync::Arc;

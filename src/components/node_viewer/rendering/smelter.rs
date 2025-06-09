@@ -1,7 +1,7 @@
 use crate::components::node_viewer::rendering::NodeRendering;
 use crate::components::node_viewer::state::NodeViewerState;
 use egui::{PopupCloseBehavior, Ui};
-use graphtorio_game::types::factory_node::smelter::SmelterNode;
+use graphtorio_game::types::factory::node::smelter::SmelterNode;
 
 impl NodeRendering for SmelterNode {
     fn body_enabled(&self) -> bool {

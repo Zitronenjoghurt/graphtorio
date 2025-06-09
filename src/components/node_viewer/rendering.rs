@@ -1,8 +1,7 @@
 use crate::components::node_viewer::state::NodeViewerState;
 use egui::Ui;
 use egui_snarl::ui::PinInfo;
-use graphtorio_game::types::factory_node::{FactoryNode, FactoryNodeTrait};
-
+use graphtorio_game::types::factory::node::{FactoryNode, FactoryNodeTrait};
 mod resource;
 mod smelter;
 

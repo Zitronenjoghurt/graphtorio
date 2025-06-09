@@ -1,6 +1,6 @@
 use crate::views::UIView;
 use egui_snarl::Snarl;
-use graphtorio_game::types::factory_node::FactoryNode;
+use graphtorio_game::types::factory::node::FactoryNode;
 use graphtorio_game::Game;
 
 pub struct AppState {

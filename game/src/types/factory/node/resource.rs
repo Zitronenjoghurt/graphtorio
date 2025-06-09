@@ -1,4 +1,4 @@
-use crate::types::factory_node::FactoryNodeTrait;
+use crate::types::factory::node::FactoryNodeTrait;
 use crate::types::resource::{Resource, ResourceIO};
 use std::sync::Arc;
 

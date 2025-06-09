@@ -4,7 +4,7 @@ use crate::components::node_viewer::state::NodeViewerState;
 use egui::Ui;
 use egui_snarl::ui::{SnarlPin, SnarlViewer};
 use egui_snarl::{InPin, NodeId, OutPin, Snarl};
-use graphtorio_game::types::factory_node::{FactoryNode, FactoryNodeTrait};
+use graphtorio_game::types::factory::node::{FactoryNode, FactoryNodeTrait};
 use std::sync::Arc;
 
 mod rendering;
@@ -22,7 +22,7 @@ impl NodeViewer {
         }
     }
 
-    pub fn update(&mut self, app_state: &AppState) {
+    pub fn update(&mut self, app_state: &mut AppState) {
         self.state.update(app_state);
     }
 }
@@ -82,9 +82,11 @@ impl SnarlViewer<FactoryNode> for NodeViewer {
     }
 
     fn connect(&mut self, from: &OutPin, to: &InPin, snarl: &mut Snarl<FactoryNode>) {
-        let out_node = &snarl[from.id.node];
+        let out_node_id = from.id.node;
+        let out_node = &snarl[out_node_id];
         let out_index = from.id.output;
-        let in_node = &snarl[to.id.node];
+        let in_node_id = to.id.node;
+        let in_node = &snarl[in_node_id];
         let in_index = to.id.input;
 
         if let Some(out_io) = out_node.output_at_index(out_index) {
