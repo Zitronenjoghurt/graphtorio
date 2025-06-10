@@ -60,15 +60,29 @@ impl Factory {
                 };
 
                 let input_node_output_pin = self.snarl.out_pin(input_node_output_pin_id);
-                let consumer_node_ids: Vec<NodeId> = input_node_output_pin
-                    .remotes
+                let mut consumer_in_pins: Vec<InPinId> =
+                    input_node_output_pin.remotes.iter().copied().collect();
+                consumer_in_pins.sort_by_key(|pin| (pin.node, pin.input));
+
+                let consumer_count = consumer_in_pins.len();
+                if consumer_count == 0 {
+                    return None;
+                }
+
+                let our_position = consumer_in_pins
                     .iter()
-                    .map(|in_pin_id| in_pin_id.node)
-                    .collect();
+                    .position(|pin| pin.node == node_id && pin.input == *input)
+                    .unwrap_or(0);
 
-                let balanced_amount = input_io.amount / consumer_node_ids.len() as u64;
+                let base_amount = input_io.amount / consumer_count as u64;
+                let remainder = input_io.amount % consumer_count as u64;
+                let amount = if (our_position as u64) < remainder {
+                    base_amount + 1
+                } else {
+                    base_amount
+                };
 
-                Some((*input, balanced_amount))
+                Some((*input, amount))
             })
             .fold(HashMap::default(), |mut acc, (input, amount)| {
                 *acc.entry(input).or_default() += amount;

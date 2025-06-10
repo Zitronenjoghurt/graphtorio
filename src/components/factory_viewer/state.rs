@@ -6,28 +6,33 @@ use egui_snarl::NodeId;
 use graphtorio_game::data::GameData;
 use graphtorio_game::types::recipe::Recipe;
 use graphtorio_game::types::resource::{ResourceIO, ResourceShape};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
+use std::time::{Duration, Instant};
 
 #[derive(Debug)]
 pub struct FactoryViewerState {
     pub current_language: String,
     pub fallback_language: String,
     pub game_data: Arc<GameData>,
-    pub dirty_nodes: Vec<NodeId>,
-    pub nodes_to_clear_io: Vec<NodeId>,
+    pub dirty_nodes: HashSet<NodeId>,
+    pub nodes_to_clear_io: HashSet<NodeId>,
+    pub last_update: Instant,
+    pub update_interval: Duration,
     pub smelter_options: HashMap<String, Arc<Recipe>>,
 }
 
 impl FactoryViewerState {
-    pub fn new(app_state: &AppState) -> Self {
+    pub fn new(app_state: &AppState, update_interval: Duration) -> Self {
         let game_data = app_state.game.data.clone();
         Self {
             current_language: String::new(),
             fallback_language: game_data.default_language.clone(),
             game_data,
-            dirty_nodes: Vec::new(),
-            nodes_to_clear_io: Vec::new(),
+            dirty_nodes: HashSet::new(),
+            nodes_to_clear_io: HashSet::new(),
+            last_update: Instant::now(),
+            update_interval,
             smelter_options: HashMap::new(),
         }
     }

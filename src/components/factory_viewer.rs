@@ -7,6 +7,7 @@ use egui_snarl::{InPin, NodeId, OutPin, Snarl};
 use graphtorio_game::types::factory::node::{FactoryNode, FactoryNodeTrait};
 use graphtorio_game::types::factory::Factory;
 use std::sync::Arc;
+use std::time::{Duration, Instant};
 
 mod rendering;
 mod state;
@@ -17,9 +18,9 @@ pub struct FactoryViewer {
 }
 
 impl FactoryViewer {
-    pub fn new(app_state: &AppState) -> Self {
+    pub fn new(app_state: &AppState, update_interval: Duration) -> Self {
         Self {
-            state: FactoryViewerState::new(app_state),
+            state: FactoryViewerState::new(app_state, update_interval),
         }
     }
 
@@ -29,14 +30,18 @@ impl FactoryViewer {
 
     pub fn render_tick(&mut self, factory: &mut Factory, ui: &mut Ui) {
         factory.snarl.show(self, &SnarlStyle::default(), 1, ui);
-        self.update_factory(factory);
+
+        if self.state.last_update.elapsed() > self.state.update_interval {
+            self.update_factory(factory);
+            self.state.last_update = Instant::now();
+        }
     }
 
     fn update_factory(&mut self, factory: &mut Factory) {
         let cleared_dirty_nodes: Vec<NodeId> = self
             .state
             .nodes_to_clear_io
-            .drain(..)
+            .drain()
             .map(|node_id| factory.clear_node_io(node_id))
             .flatten()
             .collect();
@@ -45,7 +50,7 @@ impl FactoryViewer {
         self.state.dirty_nodes = self
             .state
             .dirty_nodes
-            .drain(..)
+            .drain()
             .map(|node_id| factory.recalculate_io(node_id))
             .flatten()
             .collect();
@@ -124,13 +129,13 @@ impl SnarlViewer<FactoryNode> for FactoryViewer {
             }
 
             snarl.connect(from.id, to.id);
-            self.state.dirty_nodes.push(out_node_id);
+            self.state.dirty_nodes.insert(out_node_id);
         }
     }
 
     fn disconnect(&mut self, from: &OutPin, to: &InPin, snarl: &mut Snarl<FactoryNode>) {
         snarl.disconnect(from.id, to.id);
-        self.state.dirty_nodes.push(to.id.node);
-        self.state.dirty_nodes.push(from.id.node);
+        self.state.dirty_nodes.insert(to.id.node);
+        self.state.dirty_nodes.insert(from.id.node);
     }
 }

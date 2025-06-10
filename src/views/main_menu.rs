@@ -2,6 +2,7 @@ use crate::app::state::AppState;
 use crate::components::factory_viewer::FactoryViewer;
 use crate::views::View;
 use egui::Context;
+use std::time::Duration;
 
 #[derive(Debug)]
 pub struct MainMenuView {
@@ -11,7 +12,7 @@ pub struct MainMenuView {
 impl View for MainMenuView {
     fn new(state: &AppState) -> Self {
         Self {
-            factory_viewer: FactoryViewer::new(state),
+            factory_viewer: FactoryViewer::new(state, Duration::from_millis(100)),
         }
     }
 

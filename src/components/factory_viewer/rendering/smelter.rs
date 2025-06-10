@@ -23,7 +23,7 @@ impl FactoryNodeRenderingTrait for SmelterNode {
                         &viewer_state.fallback_language,
                     ));
                     if ui.small_button("✖").clicked() {
-                        viewer_state.nodes_to_clear_io.push(node_id.clone());
+                        viewer_state.nodes_to_clear_io.insert(node_id.clone());
                     }
                 });
             } else {
