@@ -53,7 +53,8 @@ impl FactoryViewerState {
                 (
                     recipe
                         .name
-                        .translate(&self.current_language, &self.fallback_language),
+                        .translate(&self.current_language, &self.fallback_language)
+                        .unwrap_or(recipe.identifier.clone()),
                     Arc::clone(recipe),
                 )
             })
@@ -71,7 +72,8 @@ impl FactoryViewerState {
             io_true
                 .resource
                 .name
-                .translate(&self.current_language, &self.fallback_language),
+                .translate(&self.current_language, &self.fallback_language)
+                .unwrap_or(io_true.resource.identifier.clone()),
             io_true.amount,
             io_desired.amount,
         ));

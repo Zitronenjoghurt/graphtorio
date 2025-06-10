@@ -12,14 +12,14 @@ impl Localization {
         &self.0
     }
 
-    pub fn translate(&self, language: &str, fallback: &str) -> String {
+    pub fn translate(&self, language: &str, fallback: &str) -> Option<String> {
         if let Some(translation) = self.0.get(language) {
-            translation.to_string()
+            Some(translation.to_string())
         } else {
             if let Some(translation) = self.0.get(fallback) {
-                translation.to_string()
+                Some(translation.to_string())
             } else {
-                "MISSING TRANSLATION".to_string()
+                None
             }
         }
     }
