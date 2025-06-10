@@ -23,12 +23,32 @@ impl FactoryViewer {
         }
     }
 
-    pub fn update(&mut self, app_state: &AppState) {
+    pub fn update_state(&mut self, app_state: &AppState) {
         self.state.update(app_state);
     }
 
-    pub fn show(&mut self, factory: &mut Factory, ui: &mut Ui) {
+    pub fn render_tick(&mut self, factory: &mut Factory, ui: &mut Ui) {
         factory.snarl.show(self, &SnarlStyle::default(), 1, ui);
+        self.update_factory(factory);
+    }
+
+    fn update_factory(&mut self, factory: &mut Factory) {
+        let cleared_dirty_nodes: Vec<NodeId> = self
+            .state
+            .nodes_to_clear_io
+            .drain(..)
+            .map(|node_id| factory.clear_node_io(node_id))
+            .flatten()
+            .collect();
+        self.state.dirty_nodes.extend(cleared_dirty_nodes);
+
+        self.state.dirty_nodes = self
+            .state
+            .dirty_nodes
+            .drain(..)
+            .map(|node_id| factory.recalculate_io(node_id))
+            .flatten()
+            .collect();
     }
 }
 
@@ -83,7 +103,7 @@ impl SnarlViewer<FactoryNode> for FactoryViewer {
         snarl: &mut Snarl<FactoryNode>,
     ) {
         let node = &mut snarl[node_id];
-        node.render_body(ui, &self.state);
+        node.render_body(ui, &mut self.state, &node_id);
     }
 
     fn connect(&mut self, from: &OutPin, to: &InPin, snarl: &mut Snarl<FactoryNode>) {
@@ -94,8 +114,8 @@ impl SnarlViewer<FactoryNode> for FactoryViewer {
         let in_node = &snarl[in_node_id];
         let in_index = to.id.input;
 
-        if let Some(out_io) = out_node.output_at_index(out_index) {
-            let Some(in_io) = in_node.input_at_index(in_index) else {
+        if let Some(out_io) = out_node.desired_output_at_index(out_index) {
+            let Some(in_io) = in_node.desired_input_at_index(in_index) else {
                 return;
             };
 
@@ -104,6 +124,13 @@ impl SnarlViewer<FactoryNode> for FactoryViewer {
             }
 
             snarl.connect(from.id, to.id);
+            self.state.dirty_nodes.push(out_node_id);
         }
+    }
+
+    fn disconnect(&mut self, from: &OutPin, to: &InPin, snarl: &mut Snarl<FactoryNode>) {
+        snarl.disconnect(from.id, to.id);
+        self.state.dirty_nodes.push(to.id.node);
+        self.state.dirty_nodes.push(from.id.node);
     }
 }

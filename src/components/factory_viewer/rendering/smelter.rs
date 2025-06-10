@@ -1,6 +1,7 @@
 use crate::components::factory_viewer::rendering::FactoryNodeRenderingTrait;
 use crate::components::factory_viewer::state::FactoryViewerState;
 use egui::{PopupCloseBehavior, Ui};
+use egui_snarl::NodeId;
 use graphtorio_game::types::factory::node::smelter::SmelterNode;
 
 impl FactoryNodeRenderingTrait for SmelterNode {
@@ -8,16 +9,21 @@ impl FactoryNodeRenderingTrait for SmelterNode {
         true
     }
 
-    fn render_body(&mut self, ui: &mut Ui, viewer_state: &FactoryViewerState) {
+    fn render_body(
+        &mut self,
+        ui: &mut Ui,
+        viewer_state: &mut FactoryViewerState,
+        node_id: &NodeId,
+    ) {
         ui.vertical(|ui| {
-            if let Some(recipe) = self.recipe.clone() {
+            if let Some(recipe) = self.get_recipe().clone() {
                 ui.horizontal(|ui| {
                     ui.label(recipe.name.translate(
                         &viewer_state.current_language,
                         &viewer_state.fallback_language,
                     ));
                     if ui.small_button("✖").clicked() {
-                        self.recipe = None;
+                        viewer_state.nodes_to_clear_io.push(node_id.clone());
                     }
                 });
             } else {
@@ -35,7 +41,7 @@ impl FactoryNodeRenderingTrait for SmelterNode {
                     PopupCloseBehavior::CloseOnClickOutside,
                     |ui| {
                         ui.set_min_width(200.0);
-                        ui.text_edit_singleline(&mut self.selection_filter);
+                        ui.text_edit_singleline(self.get_selection_filter_mut());
                         ui.separator();
 
                         let filtered_options: Vec<_> = viewer_state
@@ -43,7 +49,7 @@ impl FactoryNodeRenderingTrait for SmelterNode {
                             .keys()
                             .filter(|name| {
                                 name.to_lowercase()
-                                    .contains(&self.selection_filter.to_lowercase())
+                                    .contains(&self.get_selection_filter().to_lowercase())
                             })
                             .collect();
 
@@ -52,8 +58,7 @@ impl FactoryNodeRenderingTrait for SmelterNode {
                             .show(ui, |ui| {
                                 for option in filtered_options {
                                     if ui.selectable_label(false, option).clicked() {
-                                        self.recipe =
-                                            Some(viewer_state.smelter_options[option].clone());
+                                        self.set_recipe(&viewer_state.smelter_options[option]);
                                         ui.memory_mut(|mem| mem.close_popup());
                                     }
                                 }

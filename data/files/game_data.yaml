@@ -40,6 +40,14 @@ recipes:
     outputs:
       - resource: iron
         amount: 32
+  - identifier: iron-loop
+    kind: Smelting
+    inputs:
+      - resource: iron
+        amount: 10
+    outputs:
+      - resource: iron
+        amount: 10
 
 localizations:
   recipe_names:

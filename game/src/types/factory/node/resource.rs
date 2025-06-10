@@ -1,9 +1,10 @@
 use crate::types::factory::node::FactoryNodeTrait;
 use crate::types::resource::{Resource, ResourceIO};
+use egui::ahash::HashMap;
 use std::sync::Arc;
 
 pub struct ResourceNode {
-    pub output: ResourceIO,
+    output: ResourceIO,
 }
 
 impl ResourceNode {
@@ -27,11 +28,21 @@ impl FactoryNodeTrait for ResourceNode {
         1
     }
 
-    fn input_at_index(&self, _index: usize) -> Option<&ResourceIO> {
+    fn true_input_at_index(&self, _index: usize) -> Option<&ResourceIO> {
         None
     }
 
-    fn output_at_index(&self, index: usize) -> Option<&ResourceIO> {
+    fn desired_input_at_index(&self, _index: usize) -> Option<&ResourceIO> {
+        None
+    }
+
+    fn true_output_at_index(&self, index: usize) -> Option<&ResourceIO> {
+        self.desired_output_at_index(index)
+    }
+
+    fn desired_output_at_index(&self, index: usize) -> Option<&ResourceIO> {
         if index == 0 { Some(&self.output) } else { None }
     }
+
+    fn process_inputs(&mut self, inputs: HashMap<usize, u64>) {}
 }

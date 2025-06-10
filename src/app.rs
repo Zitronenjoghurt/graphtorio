@@ -24,6 +24,9 @@ impl GraphtorioApp {
         game.spawn_resource(egui::pos2(100.0, 200.0), "iron-ore", 10);
         game.spawn_resource(egui::pos2(400.0, 100.0), "copper-ore", 10);
         game.spawn_smelter(egui::pos2(200.0, 100.0), Some("iron-smelting"));
+        game.spawn_smelter(egui::pos2(400.0, 200.0), Some("iron-loop"));
+        game.spawn_smelter(egui::pos2(400.0, 200.0), Some("iron-loop"));
+        game.spawn_smelter(egui::pos2(400.0, 200.0), Some("iron-loop"));
         game.spawn_smelter(egui::pos2(600.0, 100.0), Some("copper-smelting"));
 
         let selected_language = game.data.default_language.clone();

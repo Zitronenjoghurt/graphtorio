@@ -26,6 +26,12 @@ pub struct ResourceIO {
     pub amount: u64,
 }
 
+impl ResourceIO {
+    pub fn new(resource: Arc<Resource>, amount: u64) -> Self {
+        Self { resource, amount }
+    }
+}
+
 #[derive(Debug, Default, Clone)]
 pub struct Resource {
     pub id: ResourceId,

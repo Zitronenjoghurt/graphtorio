@@ -1,6 +1,7 @@
 use crate::components::factory_viewer::state::FactoryViewerState;
 use egui::Ui;
 use egui_snarl::ui::PinInfo;
+use egui_snarl::NodeId;
 use graphtorio_game::types::factory::node::{FactoryNode, FactoryNodeTrait};
 mod resource;
 mod smelter;
@@ -12,9 +13,13 @@ pub trait FactoryNodeRenderingTrait: FactoryNodeTrait {
         viewer_state: &FactoryViewerState,
         pin_index: usize,
     ) -> PinInfo {
-        let io = self.input_at_index(pin_index);
-        if let Some(io) = io {
-            viewer_state.build_resource_io_pin(ui, io)
+        let io_true = self.true_input_at_index(pin_index);
+        let io_desired = self.desired_input_at_index(pin_index);
+        if let Some(io_true) = io_true {
+            if let Some(io_desired) = io_desired {
+                viewer_state.show_resource_io_label(ui, io_true, io_desired);
+            };
+            viewer_state.build_resource_io_pin(ui, io_true)
         } else {
             PinInfo::default()
         }
@@ -26,9 +31,13 @@ pub trait FactoryNodeRenderingTrait: FactoryNodeTrait {
         viewer_state: &FactoryViewerState,
         pin_index: usize,
     ) -> PinInfo {
-        let io = self.output_at_index(pin_index);
-        if let Some(io) = io {
-            viewer_state.build_resource_io_pin(ui, io)
+        let io_true = self.true_output_at_index(pin_index);
+        let io_desired = self.desired_output_at_index(pin_index);
+        if let Some(io_true) = io_true {
+            if let Some(io_desired) = io_desired {
+                viewer_state.show_resource_io_label(ui, io_true, io_desired);
+            };
+            viewer_state.build_resource_io_pin(ui, io_true)
         } else {
             PinInfo::default()
         }
@@ -38,7 +47,13 @@ pub trait FactoryNodeRenderingTrait: FactoryNodeTrait {
         false
     }
 
-    fn render_body(&mut self, ui: &mut Ui, viewer_state: &FactoryViewerState) {}
+    fn render_body(
+        &mut self,
+        ui: &mut Ui,
+        viewer_state: &mut FactoryViewerState,
+        node_id: &NodeId,
+    ) {
+    }
 }
 
 impl FactoryNodeRenderingTrait for FactoryNode {
@@ -73,10 +88,15 @@ impl FactoryNodeRenderingTrait for FactoryNode {
         }
     }
 
-    fn render_body(&mut self, ui: &mut Ui, viewer_state: &FactoryViewerState) {
+    fn render_body(
+        &mut self,
+        ui: &mut Ui,
+        viewer_state: &mut FactoryViewerState,
+        node_id: &NodeId,
+    ) {
         match self {
-            FactoryNode::Resource(resource) => resource.render_body(ui, viewer_state),
-            FactoryNode::Smelter(smelter) => smelter.render_body(ui, viewer_state),
+            FactoryNode::Resource(resource) => resource.render_body(ui, viewer_state, node_id),
+            FactoryNode::Smelter(smelter) => smelter.render_body(ui, viewer_state, node_id),
         }
     }
 }

@@ -2,6 +2,7 @@ use crate::app::state::AppState;
 use eframe::epaint::Color32;
 use egui::Ui;
 use egui_snarl::ui::PinInfo;
+use egui_snarl::NodeId;
 use graphtorio_game::data::GameData;
 use graphtorio_game::types::recipe::Recipe;
 use graphtorio_game::types::resource::{ResourceIO, ResourceShape};
@@ -13,6 +14,8 @@ pub struct FactoryViewerState {
     pub current_language: String,
     pub fallback_language: String,
     pub game_data: Arc<GameData>,
+    pub dirty_nodes: Vec<NodeId>,
+    pub nodes_to_clear_io: Vec<NodeId>,
     pub smelter_options: HashMap<String, Arc<Recipe>>,
 }
 
@@ -23,6 +26,8 @@ impl FactoryViewerState {
             current_language: String::new(),
             fallback_language: game_data.default_language.clone(),
             game_data,
+            dirty_nodes: Vec::new(),
+            nodes_to_clear_io: Vec::new(),
             smelter_options: HashMap::new(),
         }
     }
@@ -50,15 +55,24 @@ impl FactoryViewerState {
             .collect();
     }
 
-    pub fn build_resource_io_pin(&self, ui: &mut Ui, io: &ResourceIO) -> PinInfo {
+    pub fn show_resource_io_label(
+        &self,
+        ui: &mut Ui,
+        io_true: &ResourceIO,
+        io_desired: &ResourceIO,
+    ) {
         ui.label(format!(
-            "{} [{}]",
-            io.resource
+            "{} [{}/{}]",
+            io_true
+                .resource
                 .name
                 .translate(&self.current_language, &self.fallback_language),
-            io.amount
+            io_true.amount,
+            io_desired.amount,
         ));
+    }
 
+    pub fn build_resource_io_pin(&self, ui: &mut Ui, io: &ResourceIO) -> PinInfo {
         let color = Color32::from_rgb(
             io.resource.color_r,
             io.resource.color_g,

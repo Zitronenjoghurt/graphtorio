@@ -17,8 +17,8 @@ impl View for MainMenuView {
 
     fn render(&mut self, ctx: &Context, state: &mut AppState) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            self.factory_viewer.update(state);
-            self.factory_viewer.show(&mut state.game.factory, ui);
+            self.factory_viewer.update_state(state);
+            self.factory_viewer.render_tick(&mut state.game.factory, ui);
         });
     }
 }
