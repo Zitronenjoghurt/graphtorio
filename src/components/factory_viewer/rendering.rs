@@ -1,15 +1,15 @@
-use crate::components::node_viewer::state::NodeViewerState;
+use crate::components::factory_viewer::state::FactoryViewerState;
 use egui::Ui;
 use egui_snarl::ui::PinInfo;
 use graphtorio_game::types::factory::node::{FactoryNode, FactoryNodeTrait};
 mod resource;
 mod smelter;
 
-pub trait NodeRendering: FactoryNodeTrait {
+pub trait FactoryNodeRenderingTrait: FactoryNodeTrait {
     fn render_input(
         &self,
         ui: &mut Ui,
-        viewer_state: &NodeViewerState,
+        viewer_state: &FactoryViewerState,
         pin_index: usize,
     ) -> PinInfo {
         let io = self.input_at_index(pin_index);
@@ -23,7 +23,7 @@ pub trait NodeRendering: FactoryNodeTrait {
     fn render_output(
         &self,
         ui: &mut Ui,
-        viewer_state: &NodeViewerState,
+        viewer_state: &FactoryViewerState,
         pin_index: usize,
     ) -> PinInfo {
         let io = self.output_at_index(pin_index);
@@ -38,14 +38,14 @@ pub trait NodeRendering: FactoryNodeTrait {
         false
     }
 
-    fn render_body(&mut self, ui: &mut Ui, viewer_state: &NodeViewerState) {}
+    fn render_body(&mut self, ui: &mut Ui, viewer_state: &FactoryViewerState) {}
 }
 
-impl NodeRendering for FactoryNode {
+impl FactoryNodeRenderingTrait for FactoryNode {
     fn render_input(
         &self,
         ui: &mut Ui,
-        viewer_state: &NodeViewerState,
+        viewer_state: &FactoryViewerState,
         pin_index: usize,
     ) -> PinInfo {
         match self {
@@ -57,7 +57,7 @@ impl NodeRendering for FactoryNode {
     fn render_output(
         &self,
         ui: &mut Ui,
-        viewer_state: &NodeViewerState,
+        viewer_state: &FactoryViewerState,
         pin_index: usize,
     ) -> PinInfo {
         match self {
@@ -73,7 +73,7 @@ impl NodeRendering for FactoryNode {
         }
     }
 
-    fn render_body(&mut self, ui: &mut Ui, viewer_state: &NodeViewerState) {
+    fn render_body(&mut self, ui: &mut Ui, viewer_state: &FactoryViewerState) {
         match self {
             FactoryNode::Resource(resource) => resource.render_body(ui, viewer_state),
             FactoryNode::Smelter(smelter) => smelter.render_body(ui, viewer_state),

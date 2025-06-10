@@ -1,33 +1,38 @@
 use crate::app::state::AppState;
-use crate::components::node_viewer::rendering::NodeRendering;
-use crate::components::node_viewer::state::NodeViewerState;
+use crate::components::factory_viewer::rendering::FactoryNodeRenderingTrait;
+use crate::components::factory_viewer::state::FactoryViewerState;
 use egui::Ui;
-use egui_snarl::ui::{SnarlPin, SnarlViewer};
+use egui_snarl::ui::{SnarlPin, SnarlStyle, SnarlViewer};
 use egui_snarl::{InPin, NodeId, OutPin, Snarl};
 use graphtorio_game::types::factory::node::{FactoryNode, FactoryNodeTrait};
+use graphtorio_game::types::factory::Factory;
 use std::sync::Arc;
 
 mod rendering;
 mod state;
 
 #[derive(Debug)]
-pub struct NodeViewer {
-    state: NodeViewerState,
+pub struct FactoryViewer {
+    state: FactoryViewerState,
 }
 
-impl NodeViewer {
+impl FactoryViewer {
     pub fn new(app_state: &AppState) -> Self {
         Self {
-            state: NodeViewerState::new(app_state),
+            state: FactoryViewerState::new(app_state),
         }
     }
 
-    pub fn update(&mut self, app_state: &mut AppState) {
+    pub fn update(&mut self, app_state: &AppState) {
         self.state.update(app_state);
+    }
+
+    pub fn show(&mut self, factory: &mut Factory, ui: &mut Ui) {
+        factory.snarl.show(self, &SnarlStyle::default(), 1, ui);
     }
 }
 
-impl SnarlViewer<FactoryNode> for NodeViewer {
+impl SnarlViewer<FactoryNode> for FactoryViewer {
     fn title(&mut self, node: &FactoryNode) -> String {
         node.title()
     }

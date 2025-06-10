@@ -1356,6 +1356,8 @@ name = "graphtorio-game"
 version = "0.1.0"
 dependencies = [
  "bincode",
+ "egui",
+ "egui-snarl",
  "serde",
  "serde_yaml",
 ]

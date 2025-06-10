@@ -9,14 +9,14 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 #[derive(Debug)]
-pub struct NodeViewerState {
+pub struct FactoryViewerState {
     pub current_language: String,
     pub fallback_language: String,
     pub game_data: Arc<GameData>,
     pub smelter_options: HashMap<String, Arc<Recipe>>,
 }
 
-impl NodeViewerState {
+impl FactoryViewerState {
     pub fn new(app_state: &AppState) -> Self {
         let game_data = app_state.game.data.clone();
         Self {

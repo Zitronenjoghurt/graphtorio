@@ -1,14 +1,14 @@
-use crate::components::node_viewer::rendering::NodeRendering;
-use crate::components::node_viewer::state::NodeViewerState;
+use crate::components::factory_viewer::rendering::FactoryNodeRenderingTrait;
+use crate::components::factory_viewer::state::FactoryViewerState;
 use egui::{PopupCloseBehavior, Ui};
 use graphtorio_game::types::factory::node::smelter::SmelterNode;
 
-impl NodeRendering for SmelterNode {
+impl FactoryNodeRenderingTrait for SmelterNode {
     fn body_enabled(&self) -> bool {
         true
     }
 
-    fn render_body(&mut self, ui: &mut Ui, viewer_state: &NodeViewerState) {
+    fn render_body(&mut self, ui: &mut Ui, viewer_state: &FactoryViewerState) {
         ui.vertical(|ui| {
             if let Some(recipe) = self.recipe.clone() {
                 ui.horizontal(|ui| {
