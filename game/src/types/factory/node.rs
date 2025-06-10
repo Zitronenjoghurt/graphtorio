@@ -16,7 +16,7 @@ pub trait FactoryNodeTrait {
     fn desired_input_at_index(&self, index: usize) -> Option<&ResourceIO>;
     fn true_output_at_index(&self, index: usize) -> Option<&ResourceIO>;
     fn desired_output_at_index(&self, index: usize) -> Option<&ResourceIO>;
-    fn process_inputs(&mut self, inputs: HashMap<usize, u64>);
+    fn process_inputs(&mut self, inputs: HashMap<usize, ResourceIO>);
     fn on_clear_io(&mut self) {}
 }
 
@@ -85,7 +85,7 @@ impl FactoryNodeTrait for FactoryNode {
         }
     }
 
-    fn process_inputs(&mut self, inputs: HashMap<usize, u64>) {
+    fn process_inputs(&mut self, inputs: HashMap<usize, ResourceIO>) {
         match self {
             Self::Resource(resource) => resource.process_inputs(inputs),
             Self::Smelter(smelter) => smelter.process_inputs(inputs),

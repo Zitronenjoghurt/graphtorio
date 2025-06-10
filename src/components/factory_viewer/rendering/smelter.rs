@@ -18,15 +18,10 @@ impl FactoryNodeRenderingTrait for SmelterNode {
         ui.vertical(|ui| {
             if let Some(recipe) = self.get_recipe().clone() {
                 ui.horizontal(|ui| {
-                    ui.label(
-                        recipe
-                            .name
-                            .translate(
-                                &viewer_state.current_language,
-                                &viewer_state.fallback_language,
-                            )
-                            .unwrap_or(recipe.identifier.clone()),
-                    );
+                    ui.label(recipe.get_name(
+                        &viewer_state.current_language,
+                        &viewer_state.fallback_language,
+                    ));
                     if ui.small_button("✖").clicked() {
                         viewer_state.nodes_to_clear_io.insert(node_id.clone());
                     }

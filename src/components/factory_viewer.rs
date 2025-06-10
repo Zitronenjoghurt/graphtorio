@@ -29,7 +29,9 @@ impl FactoryViewer {
     }
 
     pub fn render_tick(&mut self, factory: &mut Factory, ui: &mut Ui) {
-        factory.snarl.show(self, &SnarlStyle::default(), 1, ui);
+        factory
+            .get_snarl_mut()
+            .show(self, &SnarlStyle::default(), 1, ui);
 
         if self.state.last_update.elapsed() > self.state.update_interval {
             self.update_factory(factory);

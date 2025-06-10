@@ -44,5 +44,5 @@ impl FactoryNodeTrait for ResourceNode {
         if index == 0 { Some(&self.output) } else { None }
     }
 
-    fn process_inputs(&mut self, inputs: HashMap<usize, u64>) {}
+    fn process_inputs(&mut self, inputs: HashMap<usize, ResourceIO>) {}
 }

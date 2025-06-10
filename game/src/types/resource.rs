@@ -43,6 +43,14 @@ pub struct Resource {
     pub color_b: u8,
 }
 
+impl Resource {
+    pub fn get_name(&self, language: &str, fallback_language: &str) -> String {
+        self.name
+            .translate(language, fallback_language)
+            .unwrap_or(self.identifier.clone())
+    }
+}
+
 impl Identifiable<String> for Resource {
     fn identifier(&self) -> String {
         self.identifier.clone()

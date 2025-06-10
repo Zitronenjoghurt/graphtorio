@@ -27,6 +27,12 @@ pub struct Recipe {
 }
 
 impl Recipe {
+    pub fn get_name(&self, language: &str, fallback_language: &str) -> String {
+        self.name
+            .translate(language, fallback_language)
+            .unwrap_or(self.identifier.clone())
+    }
+
     pub fn get_empty_inputs(&self) -> Vec<ResourceIO> {
         self.inputs
             .iter()

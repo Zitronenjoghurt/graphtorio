@@ -105,15 +105,22 @@ impl FactoryNodeTrait for SmelterNode {
         }
     }
 
-    fn process_inputs(&mut self, inputs: HashMap<usize, u64>) {
+    fn process_inputs(&mut self, inputs: HashMap<usize, ResourceIO>) {
         let Some(recipe) = &self.recipe else { return };
 
         self.true_input
             .iter_mut()
             .enumerate()
             .for_each(|(index, io)| {
-                let amount = inputs.get(&index).unwrap_or(&0);
-                io.amount = *amount;
+                if let Some(input_io) = inputs.get(&index) {
+                    if !Arc::ptr_eq(&recipe.inputs[index].resource, &io.resource) {
+                        io.amount = 0;
+                    } else {
+                        io.amount = input_io.amount;
+                    }
+                } else {
+                    io.amount = 0;
+                }
             });
         self.true_output = recipe.calculate_outputs(&self.true_input);
     }
